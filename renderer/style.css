@@ -1,0 +1,15 @@
+body{
+    background: linear-gradient(0deg, #858bb1 0%, #1172b3 100%);
+    background-size: cover;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+    background-repeat: no-repeat;
+}
