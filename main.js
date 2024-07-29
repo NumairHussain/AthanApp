@@ -5,20 +5,25 @@ const { app, BrowserWindow} = require ('electron')
 
 const isMac = process.platform === 'darwin';
 
+let mainWindow;
+
 function createMainWindow() {
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         title: 'Athan App',
-        width: 400,
+        // minHeight: 600,
+        // minWidth: 400,
         height: 600,
+        width: 400,
+        // maxHeight: 1000,
+        // maxWidth: 800,
         transparent: true,
         autoHideMenuBar: true,
+        resizable: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
         },
     });
-
-    // Open devtools if in dev env
 
     mainWindow.loadFile(path.join(__dirname, './renderer/index.html'));
 }
@@ -29,9 +34,11 @@ app.whenReady().then(() => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
           createMainWindow()
+
         }
       })
 });
+
 
 app.on('window-all-closed', () => {
     if (!isMac) {

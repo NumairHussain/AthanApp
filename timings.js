@@ -22,7 +22,6 @@ function setGradientByTime(){
 
 document.addEventListener('DOMContentLoaded', function() {
     setGradientByTime();
-    
-    // Update gradient every minute (optional)
-    setInterval(setGradientByTime, 60000); // Update every minute (60000 milliseconds)
+
+    setInterval(setGradientByTime, 60000);
 });

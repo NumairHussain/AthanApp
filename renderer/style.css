@@ -1,5 +1,7 @@
 body{
-    background: linear-gradient(0deg, #858bb1 0%, #1172b3 100%);
+    margin: 0;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
     background-size: cover;
     background-attachment: fixed;
     height: 100vh;
@@ -8,8 +10,45 @@ body{
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: white;
-    font-size: 24px;
-    font-family: Arial, sans-serif;
+    font-size: 12px;
     background-repeat: no-repeat;
+    color: white;
+}
+
+.container{
+    width: 80%;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.top, .middle, .bottom{
+    /* background-color: white; */
+    width: 100%;
+}
+
+.top{
+    text-align: center;
+    height: 25%;
+}
+
+.middle{
+    display: flex;
+    height: 50%;
+}
+
+.left{
+    text-align: left;
+    flex: 1;
+}
+
+.right{
+    text-align: right;
+    flex: 1;
+}
+
+.bottom{
+    height: 25%;
+    text-align: center;
 }
