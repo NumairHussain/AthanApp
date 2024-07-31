@@ -1,0 +1,153 @@
+{
+    "data": 
+    {
+      "ip": "98.209.67.163",
+      "hostname": null,
+      "type": "v4",
+      "range_type": 
+      {
+        "type": "PUBLIC",
+        "description": "Public address"
+      },
+      "connection": 
+      {
+        "asn": 7922,
+        "organization": "Comcast Cable Communications, LLC",
+        "isp": "Comcast Cable Communications, LLC",
+        "range": "98.209.67.0/24"
+      },
+      "location": 
+      {
+        "geonames_id": 85951091,
+        "latitude": 42.331428527832,
+        "longitude": -83.0457534790039,
+        "zip": "48201",
+        "continent": 
+        {
+          "code": "NA",
+          "name": "North America",
+          "name_translated": "North America",
+          "geonames_id": 6255149,
+          "wikidata_id": "Q49"
+        },
+        "country": 
+        {
+          "alpha2": "US",
+          "alpha3": "USA",
+          "calling_codes": 
+          [
+            "+1"
+          ],
+          "currencies": 
+          [
+            {
+              "symbol": "$",
+              "name": "US Dollar",
+              "symbol_native": "$",
+              "decimal_digits": 2,
+              "rounding": 0,
+              "code": "USD",
+              "name_plural": "US dollars",
+              "type": "fiat"
+            }
+          ],
+          "emoji": "🇺🇸",
+          "ioc": "USA",
+          "languages": 
+          [
+            {
+              "name": "English",
+              "name_native": "English"
+            }
+          ],
+          "name": "United States",
+          "name_translated": "United States",
+          "timezones": 
+          [
+            "America/New_York",
+            "America/Detroit",
+            "America/Kentucky/Louisville",
+            "America/Kentucky/Monticello",
+            "America/Indiana/Indianapolis",
+            "America/Indiana/Vincennes",
+            "America/Indiana/Winamac",
+            "America/Indiana/Marengo",
+            "America/Indiana/Petersburg",
+            "America/Indiana/Vevay",
+            "America/Chicago",
+            "America/Indiana/Tell_City",
+            "America/Indiana/Knox",
+            "America/Menominee",
+            "America/North_Dakota/Center",
+            "America/North_Dakota/New_Salem",
+            "America/North_Dakota/Beulah",
+            "America/Denver",
+            "America/Boise",
+            "America/Phoenix",
+            "America/Los_Angeles",
+            "America/Anchorage",
+            "America/Juneau",
+            "America/Sitka",
+            "America/Metlakatla",
+            "America/Yakutat",
+            "America/Nome",
+            "America/Adak",
+            "Pacific/Honolulu"
+          ],
+          "is_in_european_union": false,
+          "fips": "US",
+          "geonames_id": 85633793,
+          "hasc_id": "US",
+          "wikidata_id": "Q30"
+        },
+        "city": 
+        {
+          "fips": "2622000.0",
+          "alpha2": null,
+          "geonames_id": 85951091,
+          "hasc_id": null,
+          "wikidata_id": "Q12439",
+          "name": "Detroit",
+          "name_translated": "Detroit"
+        },
+        "region": 
+        {
+          "fips": "US26",
+          "alpha2": "US-MI",
+          "geonames_id": 85688599,
+          "hasc_id": "US.MI",
+          "wikidata_id": "Q1166",
+          "name": "Michigan",
+          "name_translated": "Michigan"
+        }
+      },
+      "tlds": [
+        ".us"
+      ],
+      "timezone": {
+        "id": "America/Detroit",
+        "current_time": "2024-07-30T21:32:06-04:00",
+        "code": "EDT",
+        "is_daylight_saving": true,
+        "gmt_offset": -14400
+      },
+      "security": {
+        "is_anonymous": null,
+        "is_datacenter": null,
+        "is_vpn": null,
+        "is_bot": null,
+        "is_abuser": null,
+        "is_known_attacker": null,
+        "is_proxy": null,
+        "is_spam": null,
+        "is_tor": null,
+        "proxy_type": null,
+        "is_icloud_relay": null,
+        "threat_score": null
+      },
+      "domains": {
+        "count": null,
+        "domains": []
+      }
+    }
+  }
