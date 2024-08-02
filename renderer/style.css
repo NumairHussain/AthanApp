@@ -1,5 +1,16 @@
+@property --color1 {
+    syntax: '<color>';
+    initial-value: white;
+    inherits: false;
+}
+
+@property --color2 {
+    syntax: '<color>';
+    initial-value: white;
+    inherits: false;
+}
+
 body {
-    background-color: white;
     margin: 0;
     font-size: 12px;
     background-repeat: no-repeat;
@@ -12,6 +23,8 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    background: linear-gradient(var(--myColor1), var(--myColor2));
+    transition: --myColor1 3s, --myColor2 3s;
 }
 
 .prayer_name{
@@ -56,7 +69,7 @@ body {
     justify-content: space-between;
 }
 
-.fajr_button, .dhuhr_button, .asr_button, .maghrib_button, .isha_button {
+button {
     margin-top: 5px;
     margin-bottom: 5px;
     border: black solid 1px;
@@ -65,42 +78,42 @@ body {
     opacity: .5;
 }
 
-.fajr_button {
-    background: linear-gradient(315deg, #858bb1 0%, #1172b3 100%);
+#fajr_button {
+    background-image: linear-gradient(315deg, #858bb1 0%, #1172b3 100%);
 }
 
-.fajr_button:hover {
+#fajr_button:hover {
     opacity: 1;
 }
 
-.dhuhr_button {
-    background: linear-gradient(315deg, #2980b9 0%, #6dd5fa 100%);
+#dhuhr_button {
+    background-image: linear-gradient(315deg, #2980b9 0%, #6dd5fa 100%);
 }
 
-.dhuhr_button:hover {
+#dhuhr_button:hover {
     opacity: 1;
 }
 
-.asr_button {
-    background: linear-gradient(315deg, #025d9a 0%, #b8d4df 100%);
+#asr_button {
+    background-image: linear-gradient(315deg, #025d9a 0%, #b8d4df 100%);
 }
 
-.asr_button:hover {
+#asr_button:hover {
     opacity: 1;
 }
 
-.maghrib_button {
-    background: linear-gradient(315deg, #fbc2eb 0%, #2b68d0 100%);
+#maghrib_button {
+    background-image: linear-gradient(315deg, #fbc2eb 0%, #2b68d0 100%);
 }
 
-.maghrib_button:hover {
+#maghrib_button:hover {
     opacity: 1;
 }
 
-.isha_button {
-    background: linear-gradient(315deg, #1B0025 0%, #2B2F77 100%);
+#isha_button {
+    background-image: linear-gradient(315deg, #1B0025 0%, #2B2F77 100%);
 }
 
-.isha_button:hover {
+#isha_button:hover {
     opacity: 1;
 }
