@@ -36,7 +36,7 @@ body::after {
     background-image: var(--bg_color_new);
     z-index: -1;
     opacity: var(--bg_opacity);
-    transition: opacity .25s ease;
+    transition: opacity .15s ease;
 }
 
 .prayer_name{

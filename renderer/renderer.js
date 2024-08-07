@@ -3,8 +3,8 @@ const axios = require('axios');
 /*--------------------------To Do List--------------------------------
 -need to create a first page that recognized whether location (city  
     and location) is empty and request to get that information
--make colors change based on time
--make colors transition neatly
+-DONE make colors change based on time
+-DONE make colors transition neatly
 -make settings page that changes method, school, can change location
 -send notifications and can toggle them, probably 
     check box on the right of the time
@@ -12,6 +12,8 @@ const axios = require('axios');
 -add minimize button that shrinks screen to only show current 
     prayer time and the next prayer time
 -make application when closed to only go into the tray
+-make each screen have small details in the background
+-create saveable file to contain settings information
 ----------------------------------------------------------------------*/
 
 const city = "Ypsilanti"
@@ -95,7 +97,7 @@ const displayPrayerTimes = (prayer_times) => {
             toStandardTime(prayer_times.Isha);
 };
 
-let initial_color;
+let initial_button;
 
 let fajr_button = document.getElementById("fajr_button");
 let dhuhr_button = document.getElementById("dhuhr_button");
@@ -117,7 +119,11 @@ function changeBackgroundByTiming(prayer_times) {
 
     if (current_time >= fajr_time && current_time < dhuhr_time) {
 
-        document.getElementById
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        fajr_button.style.opacity = 1
 
         document.documentElement.style.setProperty(
             "--bg_color_new", 
@@ -135,9 +141,15 @@ function changeBackgroundByTiming(prayer_times) {
             "--bg_opacity", 0);
         });
 
-        initial_color = window.getComputedStyle(fajr_button).backgroundImage;
+        initial_button = fajr_button
         
     } else if (current_time >= dhuhr_time && current_time < asr_time) {
+
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        dhuhr_button.style.opacity = 1
 
         document.documentElement.style.setProperty(
             "--bg_color_new", 
@@ -155,9 +167,15 @@ function changeBackgroundByTiming(prayer_times) {
             "--bg_opacity", 0);
         });
 
-        initial_color = window.getComputedStyle(dhuhr_button).backgroundImage;
+        initial_button = dhuhr_button
 
     } else if (current_time >= asr_time && current_time < maghrib_time) {
+
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        asr_button.style.opacity = 1
 
         document.documentElement.style.setProperty(
             "--bg_color_new", 
@@ -175,9 +193,15 @@ function changeBackgroundByTiming(prayer_times) {
             "--bg_opacity", 0);
         });
 
-        initial_color = window.getComputedStyle(asr_button).backgroundImage;
+        initial_button = asr_button
 
     } else if (current_time >= maghrib_time && current_time < isha_time) {
+
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        maghrib_button.style.opacity = 1
 
         document.documentElement.style.setProperty(
             "--bg_color_new", 
@@ -195,9 +219,15 @@ function changeBackgroundByTiming(prayer_times) {
             "--bg_opacity", 0);
         });
 
-        initial_color = window.getComputedStyle(maghrib_button).backgroundImage;
+        initial_button = maghrib_button
 
     } else {
+
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        isha_button.style.opacity = 1
 
         document.documentElement.style.setProperty(
             "--bg_color_new", 
@@ -215,12 +245,18 @@ function changeBackgroundByTiming(prayer_times) {
             "--bg_opacity", 0);
         });
 
-        initial_color = window.getComputedStyle(isha_button).backgroundImage;
+        initial_button = isha_button
 
     }
 }
 
 fajr_button.addEventListener("mouseenter", () => {
+
+    document.querySelectorAll("button").forEach(button => {
+        button.style.opacity = .5;
+    })
+
+    fajr_button.style.opacity = 1
     
     document.documentElement.style.setProperty(
         "--bg_color_new", 
@@ -241,6 +277,12 @@ fajr_button.addEventListener("mouseenter", () => {
 
 dhuhr_button.addEventListener("mouseenter", () => {
 
+    document.querySelectorAll("button").forEach(button => {
+        button.style.opacity = .5;
+    })
+
+    dhuhr_button.style.opacity = 1
+
     document.documentElement.style.setProperty(
         "--bg_color_new", 
         window.getComputedStyle(dhuhr_button).backgroundImage
@@ -260,6 +302,12 @@ dhuhr_button.addEventListener("mouseenter", () => {
 
 asr_button.addEventListener("mouseenter", () => {
 
+    document.querySelectorAll("button").forEach(button => {
+        button.style.opacity = .5;
+    })
+
+    asr_button.style.opacity = 1
+
     document.documentElement.style.setProperty(
         "--bg_color_new", 
         window.getComputedStyle(asr_button).backgroundImage
@@ -278,6 +326,12 @@ asr_button.addEventListener("mouseenter", () => {
 })
 
 maghrib_button.addEventListener("mouseenter", () => {
+
+    document.querySelectorAll("button").forEach(button => {
+        button.style.opacity = .5;
+    })
+
+    maghrib_button.style.opacity = 1
 
     document.documentElement.style.setProperty(
         "--bg_color_new", 
@@ -299,6 +353,12 @@ maghrib_button.addEventListener("mouseenter", () => {
 
 isha_button.addEventListener("mouseenter", () => {
 
+    document.querySelectorAll("button").forEach(button => {
+        button.style.opacity = .5;
+    })
+
+    isha_button.style.opacity = 1
+
     document.documentElement.style.setProperty(
         "--bg_color_new", 
         window.getComputedStyle(isha_button).backgroundImage
@@ -317,6 +377,7 @@ isha_button.addEventListener("mouseenter", () => {
 
 })
 
+
 let default_timer;
 
 const start_default_bg_timer = () => {
@@ -325,8 +386,14 @@ const start_default_bg_timer = () => {
 
     default_timer = setTimeout(() => {
 
+        document.querySelectorAll("button").forEach(button => {
+            button.style.opacity = .5;
+        })
+
+        initial_button.style.opacity = 1
+
         document.documentElement.style.setProperty(
-            "--bg_color_new", initial_color
+            "--bg_color_new", window.getComputedStyle(initial_button).backgroundImage
         );
 
         document.documentElement.style.setProperty("--bg_opacity", 1);
