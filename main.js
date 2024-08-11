@@ -1,47 +1,67 @@
 //do "npm start" in terminal to run 
 
 const path = require('path');
-const { app, BrowserWindow} = require ('electron')
+const { app, BrowserWindow, Tray, Menu } = require('electron')
 
 const isMac = process.platform === 'darwin';
+const iconPath = path.join(__dirname, path.join('assets', 'mosque.png'))
+const whiteIconPath = path.join(__dirname, path.join('assets', 'white mosque.png'))
 
-let mainWindow;
+let mainWindow; 
+let hidden;
+let tray;
 
 function createMainWindow() {
     mainWindow = new BrowserWindow({
         title: 'Athan App',
-        // minHeight: 600,
-        // minWidth: 400,
-        height: 600,
+        height: 650,
         width: 400,
-        // maxHeight: 1000,
-        // maxWidth: 800,
-        transparent: true,
         autoHideMenuBar: true,
-        resizable: true,
+        resizable: false,
+        show: false,
+        icon: iconPath,
+        fullscreenable: false,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-        },
+          contextIsolation: false,
+          nodeIntegration: true
+        }
     });
 
     mainWindow.loadFile(path.join(__dirname, './renderer/index.html'));
+
+    mainWindow.on("ready-to-show", mainWindow.show)
+
+    tray = new Tray(whiteIconPath);
+    tray.setToolTip("Athan App")
+
+    mainWindow.on('close', function (event) {
+      hidden = true;
+      event.preventDefault();
+      mainWindow.hide();
+    })
+    
+    tray.on("click", function () {
+      if (hidden) {
+        mainWindow.show()
+      }
+    })
+
+    tray.setContextMenu(Menu.buildFromTemplate([
+      {label: 'Show', click: () => {mainWindow.show()}},
+      {label: 'Quit', click: () => {app.exit()}}]
+    ));
+}
+
+if (process.platform == 'win32') {
+  app.setAppUserModelId(app.name);
 }
 
 app.whenReady().then(() => {
-    createMainWindow();
+  createMainWindow();
 
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-          createMainWindow()
-
-        }
-      })
+  app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow()
+      }
+    })
 });
-
-
-app.on('window-all-closed', () => {
-    if (!isMac) {
-      app.quit()
-    }
-  })

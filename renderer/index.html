@@ -8,36 +8,63 @@
     <title>Athan App</title>
 </head>
 <body>
-    <div class="container">
+    <div id="container" class="container">
         <div class="top">
-            <h1>Top Div</h1>
+            <h1 id="clock"></h1>
         </div>
         <div class="middle">
-            <div class="left">
-                <h1>Fajr</h1>
-                <h1>Sunrise</h1>
-                <h1>Dhuhr</h1>
-                <h1>Asr</h1>
-                <h1>Maghrib</h1>
-                <h1>Isha</h1>
-            </div>
-            <div class="right">
-                <h1>00:00</h1>
-                <h1>00:00</h1>
-                <h1>00:00</h1>
-                <h1>00:00</h1>
-                <h1>00:00</h1>
-                <h1>00:00</h1>
-            </div>
+            <button id="fajrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="fajrTitle" class="prayerTitle">Fajr</h1>
+                    <h1 id="fajrAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <button id="sunriseButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="sunriseTitle" class="prayerTitle">Sunrise</h1>
+                    <h1 id="sunriseTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <button id="dhuhrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="dhuhrTitle" class="prayerTitle">Dhuhr</h1>
+                    <h1 id="dhuhrAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <button id="asrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="asrTitle" class="prayerTitle">Asr</h1>
+                    <h1 id="asrAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <button id="maghribButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="maghribTitle" class="prayerTitle">Maghrib</h1>
+                    <h1 id="maghribAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <button id="ishaButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="ishaTitle" class="prayerTitle">Isha</h1>
+                    <h1 id="ishaAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
         </div>
-        <div class="bottom">
-            <h1>Bottom Div</h1>
+        <div id="bottom_div" class="bottom">
+            <button id="getLocationButton">
+                <img src="white location arrow small.png" >
+                <h1 id="locationButtonName">&nbsp;Get Location</h1> 
+            </button>
+            <button id="toSettingsButton">
+                <h1 id="settingsButtonName">Settings&nbsp;</h1>
+                <img src="white settings gear small.png" >
+            </button>
         </div>
         
     <script src="../main.js"></script>
-    <div id="prayer_times"></div>
+    <script src="renderer.js" defer></script>
+    <div></div>
 
     </div>
 </body>
 </html>
-<script src="../timings.js"></script>
