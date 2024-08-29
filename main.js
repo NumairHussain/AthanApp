@@ -14,10 +14,10 @@ let tray;
 function createMainWindow() {
     mainWindow = new BrowserWindow({
         title: 'Athan App',
-        height: 650,
         width: 400,
+        height: 650,
         autoHideMenuBar: true,
-        resizable: false,
+        resizable: true,
         show: false,
         icon: iconPath,
         fullscreenable: false,
@@ -25,6 +25,7 @@ function createMainWindow() {
           contextIsolation: false,
           nodeIntegration: true
         }
+
     });
 
     mainWindow.loadFile(path.join(__dirname, './renderer/index.html'));

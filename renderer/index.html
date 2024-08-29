@@ -11,6 +11,7 @@
     <div id="container" class="container">
         <div class="top">
             <h1 id="clock"></h1>
+            <h1 id="settingsTitle">Settings</h1>
         </div>
         <div class="middle">
             <button id="fajrButton" class="prayerButton">
@@ -49,8 +50,17 @@
                     <h1 id="ishaAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
+            <div id="settingsDiv" class="">
+                <h1 id="calcMethodTitle" class="settingsPage">Calculation Method</h1>
+
+                <select name="calcMethodSelect" id="calcMethodSelect"  class="settingsPage">
+                    <option value="islamicSciences">University of Islamic Sciences</option>
+                    <option value="isna">Islamic Society of North America</option>
+                </select>
+                
+            </div>
         </div>
-        <div id="bottom_div" class="bottom">
+        <div id="bottomDiv" class="bottom">
             <button id="getLocationButton">
                 <img src="white location arrow small.png" >
                 <h1 id="locationButtonName">&nbsp;Get Location</h1> 

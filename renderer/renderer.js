@@ -3,15 +3,13 @@ const axios = require('axios');
 /*--------------------------To Do List--------------------------------
 -DONE - FIX SCREEN FLASHING DUE TO TIMER
 -ADD SETTINGS AND LOCAL STORAGE
--CHECK LIVE TIMER SWITCHING AND SEND NOTIFICATIONS
--send notifications and can toggle them, probably 
-    check box on the right of the time
--finish top and bottom div
+    settings ideas, obv diff parameters, colors of bg, notifications of adhans
+-DONE CHECK LIVE TIMER SWITCHING AND SEND NOTIFICATIONS
 -add minimize button that shrinks screen to only show current 
-    timing and the next timing
+    timing and the next timing, possibility to make it fully transparent
 -make each screen have small details in the background
 -Randomly throughout the day, grab the next days prayer times and save it
-    Change it and make it grab the whole calendar?
+    Change it and make it grab the whole calendar year?
 ----------------------------------------------------------------------*/
 
 
@@ -22,13 +20,25 @@ const method = 2;
 const school = 1;
 
 let prayerTimes;
+
 let fajrAdhanTime, sunriseTime, dhuhrAdhanTime, 
     asrAdhanTime, maghribAdhanTime, ishaAdhanTime;
+
 let initialButton;
+
 let sentFajrNotifFlag, sentSunriseNotifFlag, sentDhuhrNotifFlag, 
     sentAsrNotifFlag, sentMaghribNotifFlag, sentIshaNotifFlag;
 
 let mouseEnterFlag = false;
+
+let defaultTimer;
+let backgroundIntervalId;
+
+let now;;
+let millisecondsToNextSecond;
+let millisecondsToNextMinute;
+
+let toSettingsButtonClicked;
 
 const fajrButton = document.getElementById("fajrButton");
 const fajrTitle = document.getElementById("fajrTitle");
@@ -47,6 +57,8 @@ const maghribTitle = document.getElementById("maghribTitle");
 
 const ishaButton = document.getElementById("ishaButton")
 const ishaTitle = document.getElementById("ishaTitle");
+
+var tempButton;
 
 
 const getPrayerTimes = async () => {
@@ -144,16 +156,95 @@ const sendNotification = (salahName) => {
     var title = "Athan App";
     var body = `It's ${salahName} Time!`;
 
-    new Notification("Athan App", {
-        icon: "../assets/white mosque.png",
-        title: title,
-        body: body,
+    // new Notification("Athan App", {
+    //     icon: "../assets/white mosque.png",
+    //     title: title,
+    //     body: body
+    // })
+}
+
+function changeBackgroundAndButtons(thisButton, thisTitle) {
+
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.style.opacity = .25;
     })
+
+    document.querySelectorAll(".prayerTitle").forEach(button => {
+        if (button.innerText.charAt(0) == "\u2022") {
+            button.innerText = button.innerText.substring(1, button.innerText.length)
+        }
+    })
+
+    thisButton.style.opacity = 1;
+
+    thisTitle.innerText = String(thisTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + thisTitle.innerText : thisTitle.innerText;
+
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(thisButton).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
+
+    initialButton = thisButton;
+}
+
+function changeBackgroundOnly(thisButton) {
+
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(thisButton).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
+
+    initialButton = thisButton;
+}
+
+function hoverOpacity() {
+
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.style.opacity = .25;
+    })
+
+    this.style.opacity = 1
+    
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(this).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
 }
 
 function changeBackgroundByTiming() {
-
-    console.log("reached background change function")
 
     var currentTime = new Date().toLocaleTimeString(
         ['it-IT'], {hour: '2-digit', minute: '2-digit'}
@@ -161,76 +252,24 @@ function changeBackgroundByTiming() {
 
     if (currentTime >= fajrAdhanTime && currentTime < sunriseTime) {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        fajrButton.style.opacity = 1;
-
-        fajrTitle.innerText = String(fajrTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + fajrTitle.innerText : fajrTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(fajrButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = fajrButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(fajrButton)
+        } else {
+            changeBackgroundAndButtons(fajrButton, fajrTitle)
+        }
 
         if (!sentFajrNotifFlag) {
             sendNotification("Fajr");
             sentFajrNotifFlag = true;
         }
-        
+
     } else if (currentTime >= sunriseTime && currentTime < dhuhrAdhanTime) {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        sunriseButton.style.opacity = 1;
-
-        sunriseTitle.innerText = String(sunriseTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + sunriseTitle.innerText : sunriseTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(sunriseButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = sunriseButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(sunriseButton)
+        } else {
+            changeBackgroundAndButtons(sunriseButton, sunriseTitle)
+        }
 
         if (!sentSunriseNotifFlag) {
             sendNotification("Sunrise");
@@ -239,37 +278,11 @@ function changeBackgroundByTiming() {
         
     } else if (currentTime >= dhuhrAdhanTime && currentTime < asrAdhanTime) {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        dhuhrButton.style.opacity = 1;
-
-        dhuhrTitle.innerText = String(dhuhrTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + dhuhrTitle.innerText : dhuhrTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(dhuhrButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = dhuhrButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(dhuhrButton)
+        } else {
+            changeBackgroundAndButtons(dhuhrButton, dhuhrTitle)
+        }
 
         if (!sentDhuhrNotifFlag) {
             sendNotification("Dhuhr");
@@ -278,37 +291,11 @@ function changeBackgroundByTiming() {
         
     } else if (currentTime >= asrAdhanTime && currentTime < maghribAdhanTime) {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        asrButton.style.opacity = 1
-
-        asrTitle.innerText = String(asrTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + asrTitle.innerText : asrTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(asrButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = asrButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(asrButton)
+        } else {
+            changeBackgroundAndButtons(asrButton, asrTitle)
+        }
 
         if (!sentAsrNotifFlag) {
             sendNotification("Asr");
@@ -317,77 +304,24 @@ function changeBackgroundByTiming() {
 
     } else if (currentTime >= maghribAdhanTime && currentTime < ishaAdhanTime) {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        maghribButton.style.opacity = 1;
-
-        maghribTitle.innerText = String(maghribTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + maghribTitle.innerText : maghribTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(maghribButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = maghribButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(maghribButton)
+        } else {
+            changeBackgroundAndButtons(maghribButton, maghribTitle)
+        }
 
         if (!sentMaghribNotifFlag) {
             sendNotification("Maghrib");
             sentMaghribNotifFlag = true;
         }
         
-
     } else {
 
-        document.querySelectorAll(".prayerButton").forEach(button => {
-            button.style.opacity = .25;
-        })
-
-        document.querySelectorAll(".prayerTitle").forEach(button => {
-            if (button.innerText.charAt(0) == "\u2022") {
-                button.innerText = button.innerText.substring(1, button.innerText.length)
-            }
-        })
-
-        ishaButton.style.opacity = 1;
-
-        ishaTitle.innerText = String(ishaTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + ishaTitle.innerText : ishaTitle.innerText;
-
-        document.documentElement.style.setProperty(
-            "--bgColorNew", 
-            window.getComputedStyle(ishaButton).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bgOpacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgColorOld", 
-            document.documentElement.style.getPropertyValue("--bgColorNew"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bgOpacity", 0);
-        });
-
-        initialButton = ishaButton;
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(ishaButton)
+        } else {
+            changeBackgroundAndButtons(ishaButton, ishaTitle)
+        }
 
         if (!sentIshaNotifFlag) {
             sendNotification("Isha");
@@ -396,166 +330,34 @@ function changeBackgroundByTiming() {
     }
 }
 
-fajrButton.addEventListener("mouseenter", () => {
+function addButtonEventListener() {
 
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
+    fajrButton.addEventListener("mouseenter", hoverOpacity)
 
-    fajrButton.style.opacity = 1
-    
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(fajrButton).backgroundImage
-    );
+    sunriseButton.addEventListener("mouseenter", hoverOpacity)
 
-    document.documentElement.style.setProperty("--bgOpacity", 1);
+    dhuhrButton.addEventListener("mouseenter", hoverOpacity)
 
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
+    asrButton.addEventListener("mouseenter", hoverOpacity)
 
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-})
+    maghribButton.addEventListener("mouseenter", hoverOpacity)
 
-sunriseButton.addEventListener("mouseenter", () => {
+    ishaButton.addEventListener("mouseenter", hoverOpacity)
+}
 
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
 
-    sunriseButton.style.opacity = 1
-    
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(sunriseButton).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bgOpacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-})
-
-dhuhrButton.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
-
-    dhuhrButton.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(dhuhrButton).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bgOpacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-})
-
-asrButton.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
-
-    asrButton.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(asrButton).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bgOpacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-})
-
-maghribButton.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
-
-    maghribButton.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(maghribButton).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bgOpacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-    
-})
-
-ishaButton.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
-    })
-
-    ishaButton.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bgColorNew", 
-        window.getComputedStyle(ishaButton).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bgOpacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgColorOld", 
-        document.documentElement.style.getPropertyValue("--bgColorNew"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bgOpacity", 0);
-    });
-
-})
-
-let defaultTimer;
 
 const startDefaultBgTimer = () => {
+
+    if (mouseEnterFlag) {
+        mouseEnterFlag = false;
+    } else {
+        return
+    }
 
     clearTimeout(defaultTimer);
 
     defaultTimer = setTimeout(() => {
-        console.log("function to reset background to original reached")
 
         document.querySelectorAll(".prayerButton").forEach(button => {
             button.style.opacity = .25;
@@ -567,7 +369,7 @@ const startDefaultBgTimer = () => {
             "--bgColorNew", window.getComputedStyle(initialButton).backgroundImage
         );
 
-        document.documentElement.style.setProperty("--bgOpacity", 1);
+        document.documentElement.style.setProperty("--bgOpacity", 1);6
 
         sleep(250).then(() => {document.documentElement.style.setProperty(
             "--bgColorOld", 
@@ -583,22 +385,14 @@ const startDefaultBgTimer = () => {
 
 const stopDefaultBgTimer = () => {
     clearTimeout(defaultTimer)
+    mouseEnterFlag = true;
 }
 
 document.querySelectorAll('.prayerButton').forEach(button => { 
     
-    button.addEventListener('mouseenter', () => { 
-        stopDefaultBgTimer(); 
-        mouseEnterFlag = true;
-    });
+    button.addEventListener('mouseenter', stopDefaultBgTimer);
 
-    button.addEventListener('mouseleave', () => { 
-        if (mouseEnterFlag)
-        {
-            startDefaultBgTimer();
-            mouseEnterFlag = false;
-        }
-    });
+    button.addEventListener('mouseleave', startDefaultBgTimer);
     
 });
 
@@ -615,10 +409,11 @@ function updateLiveTime() {
 function startLiveTime() {
     updateLiveTime();
     getPrayerTimes();
+    addButtonEventListener();
 
-    const now = new Date();
-    const millisecondsToNextSecond = 1000 - now.getMilliseconds();
-    const millisecondsToNextMinute = ((60 - now.getSeconds()) * 1000) + millisecondsToNextSecond;
+    now = new Date();
+    millisecondsToNextSecond = 1000 - now.getMilliseconds();
+    millisecondsToNextMinute = ((60 - now.getSeconds()) * 1000) + millisecondsToNextSecond;
 
     setTimeout(() => {
         updateLiveTime();
@@ -628,9 +423,44 @@ function startLiveTime() {
 
     setTimeout(() => {
         changeBackgroundByTiming();
-
+    
         setInterval(changeBackgroundByTiming, 60000);
     }, millisecondsToNextMinute);
 }
 
+function backgroundMiddleChecker() {
+    if (toSettingsButtonClicked) {
+        clearInterval(defaultTimer)
+    } else {
+        startDefaultBgTimer()
+    }
+}
+
 startLiveTime();
+
+document.getElementById("toSettingsButton").addEventListener("click", () => {
+
+    toSettingsButtonClicked = true;
+
+    stopDefaultBgTimer();
+
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.removeEventListener('mouseenter', hoverOpacity)
+        button.removeEventListener('mouseenter', stopDefaultBgTimer)
+        button.removeEventListener('mouseleave', startDefaultBgTimer)
+    });
+
+    document.getElementById("clock").style.opacity = 0;
+
+    document.querySelectorAll(".prayerButton").forEach((button, index) => {
+        sleep(250 * (index + 1)).then(() => {button.style.opacity = 0;})
+    });
+
+    // sleep(1750).then(() => {document.getElementById("bottomDiv").style.opacity = 0})
+
+    sleep(2000).then(() => {document.getElementById("settingsTitle").style.opacity = 1});
+    sleep(2250).then(() => {document.getElementById("calcMethodTitle").style.opacity = 1});
+    sleep(2500).then(() => {document.getElementById("calcMethodSelect").style.opacity = 1});
+    document.documentElement.style.setProperty("--dropdownIndex", 10)
+    
+});

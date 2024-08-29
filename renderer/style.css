@@ -10,6 +10,14 @@
     --bgOpacity: 0;
 }
 
+:root {
+    --dropdownIndex: -1;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
 body {
     margin: 0;
     font-size: 12px;
@@ -27,6 +35,7 @@ body {
     background: var(--bgColorOld);
     z-index: -2;
     opacity: 1;
+    user-select: none;
 }
 
 body::after {
@@ -46,7 +55,6 @@ body::after {
     display: flex;
     flex-direction: column;
     opacity: 1;
-
 }
 
 .top, .middle, .bottom {
@@ -54,22 +62,30 @@ body::after {
 }
 
 .top {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: auto;
     font-size: 15px;
     color: white;
+    position: relative;
+}
+
+#clock {
+    transition: opacity 0.5s;
+}
+
+#settingsTitle {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
 .middle {
     display: flex;
     flex-direction: column;
     height: auto;
-}
-
-.prayerButtonDiv {
-    color: white;
-    display: flex;
-    justify-content: space-between;
+    position: relative
 }
 
 .prayerButton {
@@ -81,6 +97,12 @@ body::after {
     opacity: .37;
     margin-left: 3.5%;
     margin-right: 3.5%;
+}
+
+.prayerButtonDiv {
+    color: white;
+    display: flex;
+    justify-content: space-between;
 }
 
 .prayerTitle{
@@ -115,11 +137,48 @@ body::after {
     background-image: linear-gradient(315deg, #4276d0 0%, #25257d 100%);
 }
 
+#settingsDiv {
+    position: absolute;
+    width: 100%;
+    z-index: var(--dropdownIndex);
+}
+
+.settingsPage {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+    transition: opacity 0.5s;
+
+}
+
+#calcMethodTitle {
+    font-size: 24px;
+    opacity: 0;
+    color: white;
+}
+
+#calcMethodSelect {
+    font-size: 20px;
+    opacity: 0;
+    color: black;
+    border-radius: 10px;
+    align-items: center;
+    margin-left: 9.5%;
+    height: 40px;
+}
+
 .bottom {
     height: auto;
     text-align: center;
     display: flex;
     justify-content: space-between;
+}
+
+#bottomDiv {
+    transition: opacity 0.5s;
 }
 
 #getLocationButton {
