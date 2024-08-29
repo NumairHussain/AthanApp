@@ -10,42 +10,65 @@
 <body>
     <div id="container" class="container">
         <div class="top">
-            <h1>Top Div</h1>
+            <h1 id="clock"></h1>
+            <h1 id="settingsTitle">Settings</h1>
         </div>
         <div class="middle">
-            <button id="fajr_button">
-                <div class="fajr_div">
-                    <h1 class="prayer_name">Fajr</h1>
-                    <h1 id="fajr_prayer_time" class="prayer_time"></h1>
+            <button id="fajrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="fajrTitle" class="prayerTitle">Fajr</h1>
+                    <h1 id="fajrAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
-            <button id="dhuhr_button">
-                <div class="dhuhr_div">
-                    <h1 class="prayer_name">Dhuhr</h1>
-                    <h1 id="dhuhr_prayer_time" class="prayer_time"></h1>
+            <button id="sunriseButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="sunriseTitle" class="prayerTitle">Sunrise</h1>
+                    <h1 id="sunriseTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
-            <button id="asr_button">
-                <div class="asr_div">
-                    <h1 class="prayer_name">Asr</h1>
-                    <h1 id="asr_prayer_time" class="prayer_time"></h1>
+            <button id="dhuhrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="dhuhrTitle" class="prayerTitle">Dhuhr</h1>
+                    <h1 id="dhuhrAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
-            <button id="maghrib_button">
-                <div class="maghrib_div">
-                    <h1 class="prayer_name">Maghrib</h1>
-                    <h1 id="maghrib_prayer_time" class="prayer_time"></h1>
+            <button id="asrButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="asrTitle" class="prayerTitle">Asr</h1>
+                    <h1 id="asrAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
-            <button id="isha_button">
-                <div class="isha_div">
-                    <h1 class="prayer_name">Isha</h1>
-                    <h1 id="isha_prayer_time" class="prayer_time"></h1>
+            <button id="maghribButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="maghribTitle" class="prayerTitle">Maghrib</h1>
+                    <h1 id="maghribAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
+            <button id="ishaButton" class="prayerButton">
+                <div class="prayerButtonDiv">
+                    <h1 id="ishaTitle" class="prayerTitle">Isha</h1>
+                    <h1 id="ishaAdhanTimeTitle" class="adhanTime"></h1>
+                </div>
+            </button>
+            <div id="settingsDiv" class="">
+                <h1 id="calcMethodTitle" class="settingsPage">Calculation Method</h1>
+
+                <select name="calcMethodSelect" id="calcMethodSelect"  class="settingsPage">
+                    <option value="islamicSciences">University of Islamic Sciences</option>
+                    <option value="isna">Islamic Society of North America</option>
+                </select>
+                
+            </div>
         </div>
-        <div id="bottom_div" class="bottom">
-            <h1>Bottom Div</h1>
+        <div id="bottomDiv" class="bottom">
+            <button id="getLocationButton">
+                <img src="white location arrow small.png" >
+                <h1 id="locationButtonName">&nbsp;Get Location</h1> 
+            </button>
+            <button id="toSettingsButton">
+                <h1 id="settingsButtonName">Settings&nbsp;</h1>
+                <img src="white settings gear small.png" >
+            </button>
         </div>
         
     <script src="../main.js"></script>

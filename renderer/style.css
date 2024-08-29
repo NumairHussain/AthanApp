@@ -1,13 +1,21 @@
 :root {
-    --bg_color_new: linear-gradient(315deg, white,)
+    --bgColorNew: linear-gradient(315deg, white,)
 }
 
 :root {
-    --bg_color_old: white;
+    --bgColorOld: white;
 }
 
 :root {
-    --bg_opacity: 0;
+    --bgOpacity: 0;
+}
+
+:root {
+    --dropdownIndex: -1;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -24,27 +32,20 @@ body {
     align-items: center;
     text-align: center;
     position: relative;
-    background: var(--bg_color_old);
+    background: var(--bgColorOld);
     z-index: -2;
     opacity: 1;
+    user-select: none;
 }
 
 body::after {
     position: absolute;
     content: "";
     inset: 0;
-    background-image: var(--bg_color_new);
+    background-image: var(--bgColorNew);
     z-index: -1;
-    opacity: var(--bg_opacity);
+    opacity: var(--bgOpacity);
     transition: opacity .15s ease;
-}
-
-.prayer_name{
-    align-items: left;
-}
-
-.prayer_time{
-    align-items: right;
 }
 
 .container {
@@ -54,7 +55,6 @@ body::after {
     display: flex;
     flex-direction: column;
     opacity: 1;
-
 }
 
 .top, .middle, .bottom {
@@ -62,58 +62,169 @@ body::after {
 }
 
 .top {
-    text-align: center;
-    height: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    font-size: 15px;
+    color: white;
+    position: relative;
+}
+
+#clock {
+    transition: opacity 0.5s;
+}
+
+#settingsTitle {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
 .middle {
     display: flex;
     flex-direction: column;
     height: auto;
+    position: relative
 }
 
-.bottom {
-    height: 15%;
-    text-align: center;
-}
-
-.fajr_div, .dhuhr_div, .asr_div, .maghrib_div, .isha_div {
-    color: white;
-    display: flex;
-    justify-content: space-between;
-}
-
-button {
+.prayerButton {
     margin-top: 5px;
     margin-bottom: 5px;
     border: black solid 1px;
     border-radius: 20px;
     transition: opacity 0.5s;
-    opacity: .5;
+    opacity: .37;
     margin-left: 3.5%;
-    margin-right: 3.5%
+    margin-right: 3.5%;
 }
 
-button:hover {
-    opacity: 1;
+.prayerButtonDiv {
+    color: white;
+    display: flex;
+    justify-content: space-between;
 }
 
-#fajr_button {
+.prayerTitle{
+    align-items: left;
+}
+
+.adhanTime{
+    align-items: right;
+}
+
+#fajrButton {
     background-image: linear-gradient(315deg, #858bb1 0%, #1172b3 100%);
 }
 
-#dhuhr_button {
+#sunriseButton {
+    background-image: linear-gradient(315deg, #ffd399 0%, #ff8f8f 100%);
+}
+
+#dhuhrButton {
     background-image: linear-gradient(315deg, #2980b9 0%, #6dd5fa 100%);
 }
 
-#asr_button {
+#asrButton {
     background-image: linear-gradient(315deg, #025d9a 0%, #b8d4df 100%);
 }
 
-#maghrib_button {
-    background-image: linear-gradient(315deg, #fbc2eb 0%, #2b68d0 100%);
+#maghribButton {
+    background-image: linear-gradient(315deg, #fa5f55 0%, #2b68d0 100%);
 }
 
-#isha_button {
-    background-image: linear-gradient(315deg, #7c59a5 0%, #25257d 100%);
+#ishaButton {
+    background-image: linear-gradient(315deg, #4276d0 0%, #25257d 100%);
+}
+
+#settingsDiv {
+    position: absolute;
+    width: 100%;
+    z-index: var(--dropdownIndex);
+}
+
+.settingsPage {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+    transition: opacity 0.5s;
+
+}
+
+#calcMethodTitle {
+    font-size: 24px;
+    opacity: 0;
+    color: white;
+}
+
+#calcMethodSelect {
+    font-size: 20px;
+    opacity: 0;
+    color: black;
+    border-radius: 10px;
+    align-items: center;
+    margin-left: 9.5%;
+    height: 40px;
+}
+
+.bottom {
+    height: auto;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+#bottomDiv {
+    transition: opacity 0.5s;
+}
+
+#getLocationButton {
+    display: flex;
+    justify-content: space-between;
+    background: transparent;
+    opacity: 1;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: white solid 1px;
+    border-radius: 20px; 
+    margin-left: 3.5%;
+    margin-right: 3.5%;
+    background: none;
+    border: none;
+    color: white;
+    font: bold;
+    height: auto;
+    width: auto;
+    align-items: center;
+}
+
+#locationButtonName {
+    font-size: 12px;
+}
+
+#toSettingsButton {
+    display: flex;
+    justify-content: space-between;
+    background: transparent;
+    opacity: 1;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: white solid 1px;
+    border-radius: 20px; 
+    margin-left: 3.5%;
+    margin-right: 3.5%;
+    background: none;
+    border: none;
+    color: white;
+    font: bold;
+    height: auto;
+    width: auto;
+    align-items: center;
+}
+
+#settingsButtonName {
+    font-size: 12px;
 }

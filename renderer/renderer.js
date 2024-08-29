@@ -1,32 +1,70 @@
 const axios = require('axios');
 
 /*--------------------------To Do List--------------------------------
--need to create a first page that recognized whether location (city  
-    and location) is empty and request to get that information
--DONE make colors change based on time
--DONE make colors transition neatly
--make settings page that changes method, school, can change location
--send notifications and can toggle them, probably 
-    check box on the right of the time
--finish top and bottom div
+-DONE - FIX SCREEN FLASHING DUE TO TIMER
+-ADD SETTINGS AND LOCAL STORAGE
+    settings ideas, obv diff parameters, colors of bg, notifications of adhans
+-DONE CHECK LIVE TIMER SWITCHING AND SEND NOTIFICATIONS
 -add minimize button that shrinks screen to only show current 
-    prayer time and the next prayer time
--make application when closed to only go into the tray
+    timing and the next timing, possibility to make it fully transparent
 -make each screen have small details in the background
--create saveable file to contain settings information
+-Randomly throughout the day, grab the next days prayer times and save it
+    Change it and make it grab the whole calendar year?
 ----------------------------------------------------------------------*/
 
-const city = "Ypsilanti"
-const country = "US"
-const method = 2;
-const school = 1
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const city = "Ypsilanti";
+const country = "US";
+const method = 2;
+const school = 1;
+
+let prayerTimes;
+
+let fajrAdhanTime, sunriseTime, dhuhrAdhanTime, 
+    asrAdhanTime, maghribAdhanTime, ishaAdhanTime;
+
+let initialButton;
+
+let sentFajrNotifFlag, sentSunriseNotifFlag, sentDhuhrNotifFlag, 
+    sentAsrNotifFlag, sentMaghribNotifFlag, sentIshaNotifFlag;
+
+let mouseEnterFlag = false;
+
+let defaultTimer;
+let backgroundIntervalId;
+
+let now;;
+let millisecondsToNextSecond;
+let millisecondsToNextMinute;
+
+let toSettingsButtonClicked;
+
+const fajrButton = document.getElementById("fajrButton");
+const fajrTitle = document.getElementById("fajrTitle");
+
+const sunriseButton = document.getElementById("sunriseButton");
+const sunriseTitle = document.getElementById("sunriseTitle");
+
+const dhuhrButton = document.getElementById("dhuhrButton");
+const dhuhrTitle = document.getElementById("dhuhrTitle");
+
+const asrButton = document.getElementById("asrButton");
+const asrTitle = document.getElementById("asrTitle");
+
+const maghribButton = document.getElementById("maghribButton")
+const maghribTitle = document.getElementById("maghribTitle");
+
+const ishaButton = document.getElementById("ishaButton")
+const ishaTitle = document.getElementById("ishaTitle");
+
+var tempButton;
+
 
 const getPrayerTimes = async () => {
     try { 
-        const api_prayer_time_data = await axios.get(
-            'http://api.aladhan.com/v1/timingsByCity/:date', 
+        let apiPrayerTimeData = await axios.get(
+            `http://api.aladhan.com/v1/timingsByCity`, 
             {
             params: {
                 city: city,
@@ -35,395 +73,394 @@ const getPrayerTimes = async () => {
                 school: school
             }
         });
-        const prayer_times = api_prayer_time_data.data.data.timings;
-        changeBackgroundByTiming(prayer_times)
-        displayPrayerTimes(prayer_times);
+
+        prayerTimes = apiPrayerTimeData.data.data.timings;
+
+        fajrAdhanTime = prayerTimes.Fajr;
+        sunriseTime = prayerTimes.Sunrise;
+        dhuhrAdhanTime = prayerTimes.Dhuhr;
+        asrAdhanTime = prayerTimes.Asr;
+        maghribAdhanTime = prayerTimes.Maghrib;
+        ishaAdhanTime = prayerTimes.Isha;
+
+        changeBackgroundByTiming()
+        displayPrayerTimes();
+
+        //still need a system to reset the sentNotifFlags to false upon new day
+
     } catch (error) {
         console.error("Error getting prayer times: ", error);
     }
 };
 
+
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function toStandardTime(militaryTime) {
-    var final_hour = String(militaryTime).substring(0, 2);
-    var final_min = String(militaryTime).substring(3, 5);
-    var final_string = "";
-    if (parseInt(final_hour) > 12)
-    {
-        final_hour = final_hour % 12;
-        final_min += " PM";
-    }
-    else
-    {
-        final_min += " AM";
-    }
-    return final_string = final_string.concat(final_hour, ":", final_min);
+    let [hours, minutes, seconds] = militaryTime.split(':').map(Number);
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12 || 12;
+
+    return seconds == null ? `${hours}:${minutes.toString().padStart(2, '0')} ${period}` : 
+    `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${period}`;
 }
 
-const displayPrayerTimes = (prayer_times) => {
+const displayPrayerTimes = () => {
 
-    if (!prayer_times) {
+    if (!prayerTimes) {
         console.error("No prayer times data available");
         return;
     }
 
-    document.getElementById("fajr_prayer_time").innerText = String(
-        toStandardTime(prayer_times.Fajr)).charAt(0) == "0" ? 
-        toStandardTime(prayer_times.Fajr).substring(1, 
-            toStandardTime(prayer_times.Fajr).length) : 
-            toStandardTime(prayer_times.Fajr);
+    document.getElementById("fajrAdhanTimeTitle").innerText = String(
+        toStandardTime(fajrAdhanTime)).charAt(0) == "0" ? 
+        toStandardTime(fajrAdhanTime).substring(1, 
+            toStandardTime(fajrAdhanTime).length) : 
+            toStandardTime(fajrAdhanTime);
 
-    document.getElementById("dhuhr_prayer_time").innerText = String(
-        toStandardTime(prayer_times.Dhuhr)).charAt(0) == "0" ? 
-        toStandardTime(prayer_times.Dhuhr).substring(1, 
-            toStandardTime(prayer_times.Dhuhr).length) : 
-            toStandardTime(prayer_times.Dhuhr);
+    document.getElementById("sunriseTimeTitle").innerText = String(
+        toStandardTime(sunriseTime)).charAt(0) == "0" ? 
+        toStandardTime(sunriseTime).substring(1, 
+            toStandardTime(sunriseTime).length) : 
+            toStandardTime(sunriseTime);
 
-    document.getElementById("asr_prayer_time").innerText = String(
-        toStandardTime(prayer_times.Asr)).charAt(0) == "0" ? 
-        toStandardTime(prayer_times.Asr).substring(1, 
-            toStandardTime(prayer_times.Asr).length) : 
-            toStandardTime(prayer_times.Asr);
+    document.getElementById("dhuhrAdhanTimeTitle").innerText = String(
+        toStandardTime(dhuhrAdhanTime)).charAt(0) == "0" ? 
+        toStandardTime(dhuhrAdhanTime).substring(1, 
+            toStandardTime(dhuhrAdhanTime).length) : 
+            toStandardTime(dhuhrAdhanTime);
 
-    document.getElementById("maghrib_prayer_time").innerText = String(
-        toStandardTime(prayer_times.Maghrib)).charAt(0) == "0" ? 
-        toStandardTime(prayer_times.Maghrib).substring(1, 
-            toStandardTime(prayer_times.Maghrib).length) : 
-            toStandardTime(prayer_times.Maghrib);
+    document.getElementById("asrAdhanTimeTitle").innerText = String(
+        toStandardTime(asrAdhanTime)).charAt(0) == "0" ? 
+        toStandardTime(asrAdhanTime).substring(1, 
+            toStandardTime(asrAdhanTime).length) : 
+            toStandardTime(asrAdhanTime);
 
-    document.getElementById("isha_prayer_time").innerText = String(
-        toStandardTime(prayer_times.Isha)).charAt(0) == "0" ? 
-        toStandardTime(prayer_times.Isha).substring(1, 
-            toStandardTime(prayer_times.Isha).length) : 
-            toStandardTime(prayer_times.Isha);
+    document.getElementById("maghribAdhanTimeTitle").innerText = String(
+        toStandardTime(maghribAdhanTime)).charAt(0) == "0" ? 
+        toStandardTime(maghribAdhanTime).substring(1, 
+            toStandardTime(maghribAdhanTime).length) : 
+            toStandardTime(maghribAdhanTime);
+
+    document.getElementById("ishaAdhanTimeTitle").innerText = String(
+        toStandardTime(ishaAdhanTime)).charAt(0) == "0" ? 
+        toStandardTime(ishaAdhanTime).substring(1, 
+            toStandardTime(ishaAdhanTime).length) : 
+            toStandardTime(ishaAdhanTime);
 };
 
-let initial_button;
+const sendNotification = (salahName) => {
+    var title = "Athan App";
+    var body = `It's ${salahName} Time!`;
 
-let fajr_button = document.getElementById("fajr_button");
-let dhuhr_button = document.getElementById("dhuhr_button");
-let asr_button = document.getElementById("asr_button");
-let maghrib_button = document.getElementById("maghrib_button")
-let isha_button = document.getElementById("isha_button")
+    // new Notification("Athan App", {
+    //     icon: "../assets/white mosque.png",
+    //     title: title,
+    //     body: body
+    // })
+}
 
-function changeBackgroundByTiming(prayer_times) {
+function changeBackgroundAndButtons(thisButton, thisTitle) {
 
-    const current_time = new Date().toLocaleTimeString(
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.style.opacity = .25;
+    })
+
+    document.querySelectorAll(".prayerTitle").forEach(button => {
+        if (button.innerText.charAt(0) == "\u2022") {
+            button.innerText = button.innerText.substring(1, button.innerText.length)
+        }
+    })
+
+    thisButton.style.opacity = 1;
+
+    thisTitle.innerText = String(thisTitle.innerText).charAt(0) != "\u2022" ? "\u2022 " + thisTitle.innerText : thisTitle.innerText;
+
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(thisButton).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
+
+    initialButton = thisButton;
+}
+
+function changeBackgroundOnly(thisButton) {
+
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(thisButton).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
+
+    initialButton = thisButton;
+}
+
+function hoverOpacity() {
+
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.style.opacity = .25;
+    })
+
+    this.style.opacity = 1
+    
+    document.documentElement.style.setProperty(
+        "--bgColorNew", 
+        window.getComputedStyle(this).backgroundImage
+    );
+
+    document.documentElement.style.setProperty("--bgOpacity", 1);
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgColorOld", 
+        document.documentElement.style.getPropertyValue("--bgColorNew"));
+    });
+
+    sleep(250).then(() => {document.documentElement.style.setProperty(
+        "--bgOpacity", 0);
+    });
+}
+
+function changeBackgroundByTiming() {
+
+    var currentTime = new Date().toLocaleTimeString(
         ['it-IT'], {hour: '2-digit', minute: '2-digit'}
     );
-    
-    const fajr_time = prayer_times.Fajr
-    const dhuhr_time = prayer_times.Dhuhr;
-    const asr_time = prayer_times.Asr;
-    const maghrib_time = prayer_times.Maghrib;
-    const isha_time = prayer_times.Isha;
 
-    if (current_time >= fajr_time && current_time < dhuhr_time) {
+    if (currentTime >= fajrAdhanTime && currentTime < sunriseTime) {
 
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
-        })
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(fajrButton)
+        } else {
+            changeBackgroundAndButtons(fajrButton, fajrTitle)
+        }
 
-        fajr_button.style.opacity = 1
+        if (!sentFajrNotifFlag) {
+            sendNotification("Fajr");
+            sentFajrNotifFlag = true;
+        }
 
-        document.documentElement.style.setProperty(
-            "--bg_color_new", 
-            window.getComputedStyle(fajr_button).backgroundImage
-        );
+    } else if (currentTime >= sunriseTime && currentTime < dhuhrAdhanTime) {
 
-        document.documentElement.style.setProperty("--bg_opacity", 1);
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(sunriseButton)
+        } else {
+            changeBackgroundAndButtons(sunriseButton, sunriseTitle)
+        }
 
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
-        });
-
-        initial_button = fajr_button
+        if (!sentSunriseNotifFlag) {
+            sendNotification("Sunrise");
+            sentSunriseNotifFlag = true;
+        }
         
-    } else if (current_time >= dhuhr_time && current_time < asr_time) {
+    } else if (currentTime >= dhuhrAdhanTime && currentTime < asrAdhanTime) {
 
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
-        })
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(dhuhrButton)
+        } else {
+            changeBackgroundAndButtons(dhuhrButton, dhuhrTitle)
+        }
 
-        dhuhr_button.style.opacity = 1
+        if (!sentDhuhrNotifFlag) {
+            sendNotification("Dhuhr");
+            sentDhuhrNotifFlag = true;
+        }
+        
+    } else if (currentTime >= asrAdhanTime && currentTime < maghribAdhanTime) {
 
-        document.documentElement.style.setProperty(
-            "--bg_color_new", 
-            window.getComputedStyle(dhuhr_button).backgroundImage
-        );
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(asrButton)
+        } else {
+            changeBackgroundAndButtons(asrButton, asrTitle)
+        }
 
-        document.documentElement.style.setProperty("--bg_opacity", 1);
+        if (!sentAsrNotifFlag) {
+            sendNotification("Asr");
+            sentAsrNotifFlag = true;
+        }
 
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
-        });
+    } else if (currentTime >= maghribAdhanTime && currentTime < ishaAdhanTime) {
 
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
-        });
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(maghribButton)
+        } else {
+            changeBackgroundAndButtons(maghribButton, maghribTitle)
+        }
 
-        initial_button = dhuhr_button
-
-    } else if (current_time >= asr_time && current_time < maghrib_time) {
-
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
-        })
-
-        asr_button.style.opacity = 1
-
-        document.documentElement.style.setProperty(
-            "--bg_color_new", 
-            window.getComputedStyle(asr_button).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bg_opacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
-        });
-
-        initial_button = asr_button
-
-    } else if (current_time >= maghrib_time && current_time < isha_time) {
-
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
-        })
-
-        maghrib_button.style.opacity = 1
-
-        document.documentElement.style.setProperty(
-            "--bg_color_new", 
-            window.getComputedStyle(maghrib_button).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bg_opacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
-        });
-
-        initial_button = maghrib_button
-
+        if (!sentMaghribNotifFlag) {
+            sendNotification("Maghrib");
+            sentMaghribNotifFlag = true;
+        }
+        
     } else {
 
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
-        })
+        if (toSettingsButtonClicked) {
+            changeBackgroundOnly(ishaButton)
+        } else {
+            changeBackgroundAndButtons(ishaButton, ishaTitle)
+        }
 
-        isha_button.style.opacity = 1
-
-        document.documentElement.style.setProperty(
-            "--bg_color_new", 
-            window.getComputedStyle(isha_button).backgroundImage
-        );
-
-        document.documentElement.style.setProperty("--bg_opacity", 1);
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
-        });
-
-        sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
-        });
-
-        initial_button = isha_button
-
+        if (!sentIshaNotifFlag) {
+            sendNotification("Isha");
+            sentIshaNotifFlag = true;
+        }
     }
 }
 
-fajr_button.addEventListener("mouseenter", () => {
+function addButtonEventListener() {
 
-    document.querySelectorAll("button").forEach(button => {
-        button.style.opacity = .5;
-    })
+    fajrButton.addEventListener("mouseenter", hoverOpacity)
 
-    fajr_button.style.opacity = 1
-    
-    document.documentElement.style.setProperty(
-        "--bg_color_new", 
-        window.getComputedStyle(fajr_button).backgroundImage
-    );
+    sunriseButton.addEventListener("mouseenter", hoverOpacity)
 
-    document.documentElement.style.setProperty("--bg_opacity", 1);
+    dhuhrButton.addEventListener("mouseenter", hoverOpacity)
 
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_color_old", 
-        document.documentElement.style.getPropertyValue("--bg_color_new"));
-    });
+    asrButton.addEventListener("mouseenter", hoverOpacity)
 
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_opacity", 0);
-    });
-})
+    maghribButton.addEventListener("mouseenter", hoverOpacity)
 
-dhuhr_button.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll("button").forEach(button => {
-        button.style.opacity = .5;
-    })
-
-    dhuhr_button.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bg_color_new", 
-        window.getComputedStyle(dhuhr_button).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bg_opacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_color_old", 
-        document.documentElement.style.getPropertyValue("--bg_color_new"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_opacity", 0);
-    });
-})
-
-asr_button.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll("button").forEach(button => {
-        button.style.opacity = .5;
-    })
-
-    asr_button.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bg_color_new", 
-        window.getComputedStyle(asr_button).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bg_opacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_color_old", 
-        document.documentElement.style.getPropertyValue("--bg_color_new"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_opacity", 0);
-    });
-})
-
-maghrib_button.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll("button").forEach(button => {
-        button.style.opacity = .5;
-    })
-
-    maghrib_button.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bg_color_new", 
-        window.getComputedStyle(maghrib_button).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bg_opacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_color_old", 
-        document.documentElement.style.getPropertyValue("--bg_color_new"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_opacity", 0);
-    });
-    
-})
-
-isha_button.addEventListener("mouseenter", () => {
-
-    document.querySelectorAll("button").forEach(button => {
-        button.style.opacity = .5;
-    })
-
-    isha_button.style.opacity = 1
-
-    document.documentElement.style.setProperty(
-        "--bg_color_new", 
-        window.getComputedStyle(isha_button).backgroundImage
-    );
-
-    document.documentElement.style.setProperty("--bg_opacity", 1);
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_color_old", 
-        document.documentElement.style.getPropertyValue("--bg_color_new"));
-    });
-
-    sleep(250).then(() => {document.documentElement.style.setProperty(
-        "--bg_opacity", 0);
-    });
-
-})
+    ishaButton.addEventListener("mouseenter", hoverOpacity)
+}
 
 
-let default_timer;
 
-const start_default_bg_timer = () => {
+const startDefaultBgTimer = () => {
 
-    clearTimeout(default_timer);
+    if (mouseEnterFlag) {
+        mouseEnterFlag = false;
+    } else {
+        return
+    }
 
-    default_timer = setTimeout(() => {
+    clearTimeout(defaultTimer);
 
-        document.querySelectorAll("button").forEach(button => {
-            button.style.opacity = .5;
+    defaultTimer = setTimeout(() => {
+
+        document.querySelectorAll(".prayerButton").forEach(button => {
+            button.style.opacity = .25;
         })
 
-        initial_button.style.opacity = 1
+        initialButton.style.opacity = 1
 
         document.documentElement.style.setProperty(
-            "--bg_color_new", window.getComputedStyle(initial_button).backgroundImage
+            "--bgColorNew", window.getComputedStyle(initialButton).backgroundImage
         );
 
-        document.documentElement.style.setProperty("--bg_opacity", 1);
+        document.documentElement.style.setProperty("--bgOpacity", 1);6
 
         sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_color_old", 
-            document.documentElement.style.getPropertyValue("--bg_color_new"));
+            "--bgColorOld", 
+            document.documentElement.style.getPropertyValue("--bgColorNew"));
         });
     
         sleep(250).then(() => {document.documentElement.style.setProperty(
-            "--bg_opacity", 0);
+            "--bgOpacity", 0);
         });
 
     }, 5000)
 };
 
-const stop_default_bg_timer = () => {
-    clearTimeout(default_timer)
+const stopDefaultBgTimer = () => {
+    clearTimeout(defaultTimer)
+    mouseEnterFlag = true;
 }
 
-document.querySelectorAll('button').forEach(button => { 
+document.querySelectorAll('.prayerButton').forEach(button => { 
+    
+    button.addEventListener('mouseenter', stopDefaultBgTimer);
 
-    button.addEventListener('mouseenter', (event) => { 
-        stop_default_bg_timer(); 
-    });
-
-    button.addEventListener('mouseleave', () => { 
-        start_default_bg_timer();
-    });
+    button.addEventListener('mouseleave', startDefaultBgTimer);
     
 });
 
-setInterval(getPrayerTimes(), 60000)
+function updateLiveTime() {
+
+    const now = new Date();
+    const hours = String(now.getHours());
+    const minutes = String(now.getMinutes());
+    const seconds = String(now.getSeconds());
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+    document.getElementById('clock').innerText = toStandardTime(formattedTime);
+}
+
+function startLiveTime() {
+    updateLiveTime();
+    getPrayerTimes();
+    addButtonEventListener();
+
+    now = new Date();
+    millisecondsToNextSecond = 1000 - now.getMilliseconds();
+    millisecondsToNextMinute = ((60 - now.getSeconds()) * 1000) + millisecondsToNextSecond;
+
+    setTimeout(() => {
+        updateLiveTime();
+
+        setInterval(updateLiveTime, 1000);
+    }, millisecondsToNextSecond);
+
+    setTimeout(() => {
+        changeBackgroundByTiming();
+    
+        setInterval(changeBackgroundByTiming, 60000);
+    }, millisecondsToNextMinute);
+}
+
+function backgroundMiddleChecker() {
+    if (toSettingsButtonClicked) {
+        clearInterval(defaultTimer)
+    } else {
+        startDefaultBgTimer()
+    }
+}
+
+startLiveTime();
+
+document.getElementById("toSettingsButton").addEventListener("click", () => {
+
+    toSettingsButtonClicked = true;
+
+    stopDefaultBgTimer();
+
+    document.querySelectorAll(".prayerButton").forEach(button => {
+        button.removeEventListener('mouseenter', hoverOpacity)
+        button.removeEventListener('mouseenter', stopDefaultBgTimer)
+        button.removeEventListener('mouseleave', startDefaultBgTimer)
+    });
+
+    document.getElementById("clock").style.opacity = 0;
+
+    document.querySelectorAll(".prayerButton").forEach((button, index) => {
+        sleep(250 * (index + 1)).then(() => {button.style.opacity = 0;})
+    });
+
+    // sleep(1750).then(() => {document.getElementById("bottomDiv").style.opacity = 0})
+
+    sleep(2000).then(() => {document.getElementById("settingsTitle").style.opacity = 1});
+    sleep(2250).then(() => {document.getElementById("calcMethodTitle").style.opacity = 1});
+    sleep(2500).then(() => {document.getElementById("calcMethodSelect").style.opacity = 1});
+    document.documentElement.style.setProperty("--dropdownIndex", 10)
+    
+});
