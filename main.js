@@ -1,11 +1,12 @@
 //do "npm start" in terminal to run 
 
 const path = require('path');
-const { app, BrowserWindow, Tray, Menu } = require('electron')
+const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
 
 const isMac = process.platform === 'darwin';
 const iconPath = path.join(__dirname, path.join('assets', 'mosque.png'))
 const whiteIconPath = path.join(__dirname, path.join('assets', 'white mosque.png'))
+const fs = require("fs")
 
 let mainWindow; 
 let hidden;
@@ -14,14 +15,15 @@ let tray;
 function createMainWindow() {
     mainWindow = new BrowserWindow({
         title: 'Athan App',
-        width: 400,
-        height: 650,
+        width: 800, // was 400
+        height: 800, // was 650
         autoHideMenuBar: true,
-        resizable: true,
+        resizable: true, //end in false
         show: false,
         icon: iconPath,
         fullscreenable: false,
         webPreferences: {
+          devTools: true, //end in false
           contextIsolation: false,
           nodeIntegration: true
         }
@@ -51,7 +53,7 @@ function createMainWindow() {
       {label: 'Show', click: () => {mainWindow.show()}},
       {label: 'Quit', click: () => {app.exit()}}]
     ));
-}
+};
 
 if (process.platform == 'win32') {
   app.setAppUserModelId(app.name);

@@ -50,15 +50,113 @@
                     <h1 id="ishaAdhanTimeTitle" class="adhanTime"></h1>
                 </div>
             </button>
-            <div id="settingsDiv" class="">
+            <div id="settingsDiv">
                 <h1 id="calcMethodTitle" class="settingsPage">Calculation Method</h1>
 
-                <select name="calcMethodSelect" id="calcMethodSelect"  class="settingsPage">
-                    <option value="islamicSciences">University of Islamic Sciences</option>
-                    <option value="isna">Islamic Society of North America</option>
-                </select>
-                
+                <div class="dropdown" id="calcMethodDropdown">
+                    <div class="select">
+                        <span class="selected">Islamic Society of North America</span>
+                        <div class="caret"></div>
+                    </div>
+                    <ul class="menu">
+                        <li>Shia Ithna-Ashari</li>
+                        <li>University of Islamic Sciences, Karachi</li>
+                        <li class="active">Islamic Society of North America</li>
+                        <li>Muslim World League</li>
+                        <li>Umm Al-Qura University, Makkah</li>
+                        <li>Egyptian General Authority of Survey</li>
+                        <li>Institute of Geophysics, University of Tehran</li>
+                        <li>Gulf Region</li>
+                        <li>Kuwait</li>
+                        <li>Qatar</li>
+                        <li>Majlis Ugama Islam Singapura, Singapore</li>
+                        <li>Union Organization islamic de France</li>
+                        <li>Diyanet İşleri Başkanlığı, Turkey</li>
+                        <li>Spiritual Administration of Muslims of Russia</li>
+                        <li>Moonsighting Committee Worldwide</li>
+                        <li>Dubai</li>
+                    </ul>
+                </div>
+
+                <h1 id="latitudeRuleTitle" class="settingsPage">High Latitude Rule</h1>
+
+                <div class="dropdown" id="latitudeRuleDropdown">
+                    <div class="select">
+                        <span class="selected">Middle of the Night</span>
+                        <div class="caret"></div>
+                    </div>
+                    <ul class="menu">
+                        <li class="active">Middle of the Night</li>
+                        <li>One Seventh</li>
+                        <li>Angle Based</li>
+                    </ul>
+                </div>
+
+                <h1 id="madhabTitle" class="settingsPage">Madhab - School</h1>
+
+                <div id="madhabSelect">
+                    <input id="toggle-on" class="toggle toggle-left" name="toggle" value="false" type="radio" checked>
+                    <label for="toggle-on" class="btn">Hanafi</label>
+                    <input id="toggle-off" class="toggle toggle-right" name="toggle" value="true" type="radio" >
+                    <label for="toggle-off" class="btn">Not Hanafi</label>
+                </div>
+
+                <div id="notificationsDiv" class="settingsPage">
+                    <button id="notificationButton" class="settingsPage">Notification Settings</button>
+                </div>
+
+                <div id="doneDiv" class="settingsPage">
+                    <button id="doneButton" class="settingsPage">Save</button>
+                </div>
             </div>
+
+            <h1 id="notificationTitle">Toggle Notifications</h1>
+
+            <div id="fajrNotificationDiv" class="notifDiv">
+                <h2 id="farjNotificationTitle" class="notif">  Fajr Notification</h1>
+                <label class="switch">
+                    <input id="fajrCheck" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="sunriseNotificationDiv" class="notifDiv">
+                <h2 id="sunriseNotificationTitle" class="notif">  Sunrise Notification</h1>
+                <label class="switch">
+                    <input id="sunriseCheck"type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="dhuhrNotificationDiv" class="notifDiv">
+                <h2 id="dhuhrjNotificationTitle" class="notif">  Dhuhr Notification</h1>
+                <label class="switch">
+                    <input id="dhuhrCheck" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="asrNotificationDiv" class="notifDiv">
+                <h2 id="asrNotificationTitle" class="notif">  Asr Notification</h1>
+                <label class="switch">
+                    <input id="asrCheck" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="maghribNotificationDiv" class="notifDiv">
+                <h2 id="maghribNotificationTitle" class="notif">  Maghrib Notification</h1>
+                <label class="switch">
+                    <input id="maghribCheck" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="ishaNotificationDiv" class="notifDiv">
+                <h2 id="ishaNotificationTitle" class="notif">  Isha Notification</h1>
+                <label class="switch">
+                    <input id="ishaCheck" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <button id="backToSettingsButton">Done</button>
+
         </div>
         <div id="bottomDiv" class="bottom">
             <button id="getLocationButton">
