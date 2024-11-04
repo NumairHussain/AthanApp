@@ -1,18 +1,14 @@
 const axios = require('axios');
 
 /*--------------------------To Do List--------------------------------
--DONE - FIX SCREEN FLASHING DUE TO TIMER
--ADD SETTINGS AND LOCAL STORAGE
-    settings ideas, obv diff parameters, colors of bg, notifications of adhans
--DONE CHECK LIVE TIMER SWITCHING AND SEND NOTIFICATIONS
 -add minimize button that shrinks screen to only show current 
     timing and the next timing, possibility to make it fully transparent
+    *Scrapped*
 -make each screen have small details in the background
+    *Scrapped*
 -Randomly throughout the day, grab the next days prayer times and save it
     Change it and make it grab the whole calendar year?
 ----------------------------------------------------------------------*/
-
-
 
 const city = "Ypsilanti";
 const country = "US";
@@ -34,7 +30,7 @@ let mouseEnterFlag = false;
 let defaultTimer;
 let backgroundIntervalId;
 
-let now;;
+let now;
 let millisecondsToNextSecond;
 let millisecondsToNextMinute;
 
@@ -58,8 +54,43 @@ const maghribTitle = document.getElementById("maghribTitle");
 const ishaButton = document.getElementById("ishaButton")
 const ishaTitle = document.getElementById("ishaTitle");
 
+const dropdowns = document.querySelectorAll('.dropdown');
+
 var tempButton;
 
+let sendFajrNotif;
+let sendSunriseNotif;
+let sendDhuhrNotif;
+let sendAsrNotif;
+let sendMaghribNotif;
+let sendIshaNotif;
+
+const homePageButtons = [
+    fajrButton, sunriseButton, dhuhrButton, 
+    asrButton, maghribButton, ishaButton
+];
+
+const settingsPageElements = [
+    document.getElementById("calcMethodTitle"), 
+    document.getElementById("calcMethodDropdown"), 
+    document.getElementById("latitudeRuleTitle"),
+    document.getElementById("latitudeRuleDropdown"),
+    document.getElementById("madhabTitle"),
+    document.getElementById("madhabSelect"),
+    document.getElementById("notificationsDiv"),
+    document.getElementById("doneDiv")
+]
+
+const notificationPageElements = [
+    document.getElementById("notificationTitle"),
+    document.getElementById("fajrNotificationDiv"),
+    document.getElementById("sunriseNotificationDiv"),
+    document.getElementById("dhuhrNotificationDiv"),
+    document.getElementById("asrNotificationDiv"),
+    document.getElementById("maghribNotificationDiv"),
+    document.getElementById("ishaNotificationDiv"),
+    document.getElementById("backToSettingsButton")
+]
 
 const getPrayerTimes = async () => {
     try { 
@@ -156,17 +187,17 @@ const sendNotification = (salahName) => {
     var title = "Athan App";
     var body = `It's ${salahName} Time!`;
 
-    // new Notification("Athan App", {
-    //     icon: "../assets/white mosque.png",
-    //     title: title,
-    //     body: body
-    // })
+    new Notification("Athan App", {
+        icon: "../assets/white mosque.png",
+        title: title,
+        body: body
+    })
 }
 
 function changeBackgroundAndButtons(thisButton, thisTitle) {
 
     document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
+        button.style.opacity = .12;
     })
 
     document.querySelectorAll(".prayerTitle").forEach(button => {
@@ -222,7 +253,7 @@ function changeBackgroundOnly(thisButton) {
 function hoverOpacity() {
 
     document.querySelectorAll(".prayerButton").forEach(button => {
-        button.style.opacity = .25;
+        button.style.opacity = .12;
     })
 
     this.style.opacity = 1
@@ -258,7 +289,7 @@ function changeBackgroundByTiming() {
             changeBackgroundAndButtons(fajrButton, fajrTitle)
         }
 
-        if (!sentFajrNotifFlag) {
+        if (!sentFajrNotifFlag && sendFajrNotif == "true") {
             sendNotification("Fajr");
             sentFajrNotifFlag = true;
         }
@@ -271,7 +302,7 @@ function changeBackgroundByTiming() {
             changeBackgroundAndButtons(sunriseButton, sunriseTitle)
         }
 
-        if (!sentSunriseNotifFlag) {
+        if (!sentSunriseNotifFlag && sendSunriseNotif == "true") {
             sendNotification("Sunrise");
             sentSunriseNotifFlag = true;
         }
@@ -284,7 +315,7 @@ function changeBackgroundByTiming() {
             changeBackgroundAndButtons(dhuhrButton, dhuhrTitle)
         }
 
-        if (!sentDhuhrNotifFlag) {
+        if (!sentDhuhrNotifFlag && sendDhuhrNotif == "true") {
             sendNotification("Dhuhr");
             sentDhuhrNotifFlag = true;
         }
@@ -297,7 +328,7 @@ function changeBackgroundByTiming() {
             changeBackgroundAndButtons(asrButton, asrTitle)
         }
 
-        if (!sentAsrNotifFlag) {
+        if (!sentAsrNotifFlag && sendAsrNotif == "true") {
             sendNotification("Asr");
             sentAsrNotifFlag = true;
         }
@@ -310,7 +341,7 @@ function changeBackgroundByTiming() {
             changeBackgroundAndButtons(maghribButton, maghribTitle)
         }
 
-        if (!sentMaghribNotifFlag) {
+        if (!sentMaghribNotifFlag && sendMaghribNotif == "true") {
             sendNotification("Maghrib");
             sentMaghribNotifFlag = true;
         }
@@ -322,8 +353,8 @@ function changeBackgroundByTiming() {
         } else {
             changeBackgroundAndButtons(ishaButton, ishaTitle)
         }
-
-        if (!sentIshaNotifFlag) {
+        
+        if (!sentIshaNotifFlag && sendIshaNotif == "true") {
             sendNotification("Isha");
             sentIshaNotifFlag = true;
         }
@@ -344,8 +375,6 @@ function addButtonEventListener() {
 
     ishaButton.addEventListener("mouseenter", hoverOpacity)
 }
-
-
 
 const startDefaultBgTimer = () => {
 
@@ -380,7 +409,7 @@ const startDefaultBgTimer = () => {
             "--bgOpacity", 0);
         });
 
-    }, 5000)
+    }, 2000)
 };
 
 const stopDefaultBgTimer = () => {
@@ -428,14 +457,6 @@ function startLiveTime() {
     }, millisecondsToNextMinute);
 }
 
-function backgroundMiddleChecker() {
-    if (toSettingsButtonClicked) {
-        clearInterval(defaultTimer)
-    } else {
-        startDefaultBgTimer()
-    }
-}
-
 startLiveTime();
 
 document.getElementById("toSettingsButton").addEventListener("click", () => {
@@ -452,15 +473,237 @@ document.getElementById("toSettingsButton").addEventListener("click", () => {
 
     document.getElementById("clock").style.opacity = 0;
 
-    document.querySelectorAll(".prayerButton").forEach((button, index) => {
-        sleep(250 * (index + 1)).then(() => {button.style.opacity = 0;})
+    homePageButtons.forEach((element, index) => {
+        sleep(250 * (index + 1) + 250).then(() => {
+            element.style.opacity = 0;
+        })
+    })
+
+    sleep(2000).then(() => {document.getElementById("bottomDiv").style.opacity = 0})
+
+    sleep(2250).then(() => {document.getElementById("settingsTitle").style.opacity = 1})
+
+    settingsPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1) + 2500).then(() => {
+            element.style.opacity = 1;
+        })
+    })
+
+    document.documentElement.style.setProperty("--dropdownIndex", 10)
+
+});
+
+dropdowns.forEach(dropdown => {
+    const select = dropdown.querySelector('.select');
+    const caret = dropdown.querySelector('.caret');
+    const menu = dropdown.querySelector('.menu');
+    const options = dropdown.querySelectorAll('.menu li');
+    const selected = dropdown.querySelector('.selected');
+
+    select.addEventListener('click', () => {
+        select.classList.toggle('select-clicked');
+        caret.classList.toggle('caret-rotate');
+        menu.classList.toggle('menu-open');
     });
 
-    // sleep(1750).then(() => {document.getElementById("bottomDiv").style.opacity = 0})
+    options.forEach(option => {
+        option.addEventListener('click', () => {
+            selected.innerText = option.innerText;
+            selected.classList.add("text-fade-in");
+            setTimeout (() => {
+                selected.classList.remove("text-fade-in")
+            }, 300);
 
-    sleep(2000).then(() => {document.getElementById("settingsTitle").style.opacity = 1});
-    sleep(2250).then(() => {document.getElementById("calcMethodTitle").style.opacity = 1});
-    sleep(2500).then(() => {document.getElementById("calcMethodSelect").style.opacity = 1});
-    document.documentElement.style.setProperty("--dropdownIndex", 10)
-    
+            select.classList.remove('select-clicked')
+            caret.classList.remove('caret-rotate');
+            menu.classList.remove('menu-open');
+
+            options.forEach(option => {
+                option.classList.remove('active')
+            })
+            option.classList.add('active');
+        });
+        //add window.localstorage.setItem
+    });
 });
+
+document.getElementById("doneButton").addEventListener("click", () => {
+
+    document.getElementById("settingsTitle").style.opacity = 0;
+
+    settingsPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1) + 250).then(() => {
+            element.style.opacity = 0;
+        })
+    })
+
+    sleep(2250).then(() => {
+        document.getElementById("clock").style.opacity = 1;
+    })
+
+    homePageButtons.forEach((element, index) => {
+        sleep(250 * (index + 1) + 2500).then(() => {
+            element.style.opacity = .12;
+        })
+    })
+
+    sleep(4000).then(() => {
+        document.documentElement.style.setProperty("--dropdownIndex", -1);
+        toSettingsButtonClicked = false;
+        startDefaultBgTimer();
+        document.querySelectorAll(".prayerButton").forEach(button => {
+            button.addEventListener('mouseenter', hoverOpacity)
+            button.addEventListener('mouseenter', stopDefaultBgTimer)
+            button.addEventListener('mouseleave', startDefaultBgTimer)
+        });
+    });
+
+    sleep(4500).then(() => {
+        document.getElementById("bottomDiv").style.opacity = 1;
+    })
+
+    saveLocalInfo();
+
+});
+
+
+
+document.getElementById("notificationButton").addEventListener("click", () => {
+
+    settingsPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1)).then(() => {
+            element.style.opacity = 0;
+        })
+    })
+
+    document.documentElement.style.setProperty("--dropdownIndex", -1)
+
+    notificationPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1) + 2000).then(() => {
+            element.style.opacity = 1;
+            element.style.zIndex = 5;
+        })
+    })
+
+})
+
+document.getElementById("backToSettingsButton").addEventListener("click", () => {
+
+    notificationPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1)).then(() => {
+            element.style.opacity = 0;
+            element.style.zIndex = -30;
+        })
+    })
+
+    document.documentElement.style.setProperty("--dropdownIndex", 10)
+
+    settingsPageElements.forEach((element, index) => {
+        sleep(250 * (index + 1) + 2000).then(() => {
+            element.style.opacity = 1;
+        })
+    })
+})
+
+function saveLocalInfo() {
+
+    let calcMethodSelected = document.querySelectorAll(".selected")[0].innerText;
+    let latitudeRuleSelected = document.querySelectorAll(".selected")[1].innerText;
+    let madhabSelected;
+    sendFajrNotif = document.getElementById("fajrCheck").checked;
+    sendSunriseNotif = document.getElementById("sunriseCheck").checked;
+    sendDhuhrNotif = document.getElementById("dhuhrCheck").checked;
+    sendAsrNotif = document.getElementById("asrCheck").checked;
+    sendMaghribNotif = document.getElementById("maghribCheck").checked;
+    sendIshaNotif = document.getElementById("ishaCheck").checked;
+
+    document.getElementsByName('toggle').forEach((element) => {
+        if (element.checked)
+        {
+            madhabSelected = element.id;
+        }
+    });
+
+    console.log(calcMethodSelected);
+    console.log(latitudeRuleSelected);
+    console.log(madhabSelected);
+    console.log(sendFajrNotif);
+    console.log(sendSunriseNotif);
+    console.log(sendDhuhrNotif);
+    console.log(sendAsrNotif);
+    console.log(sendMaghribNotif);
+    console.log(sendIshaNotif);
+
+    window.localStorage.setItem("calcMethod", calcMethodSelected)
+    window.localStorage.setItem("latRule", latitudeRuleSelected)
+    window.localStorage.setItem("madhab", madhabSelected)
+    window.localStorage.setItem("sendFajrNotif", sendFajrNotif)
+    window.localStorage.setItem("sendSunriseNotif", sendSunriseNotif)
+    window.localStorage.setItem("sendDhuhrNotif", sendDhuhrNotif)
+    window.localStorage.setItem("sendAsrNotif", sendAsrNotif)
+    window.localStorage.setItem("sendMaghribNotif", sendMaghribNotif)
+    window.localStorage.setItem("sendIshaNotif", sendIshaNotif)
+}
+
+
+
+function loadLocalStorage() {
+
+    let calcMethodSelected = window.localStorage.getItem("calcMethod");
+    let latitudeRuleSelected = window.localStorage.getItem("latRule");
+    let madhabSelected = window.localStorage.getItem("madhab");
+    sendFajrNotif = window.localStorage.getItem("sendFajrNotif");
+    sendSunriseNotif = window.localStorage.getItem("sendSunriseNotif");
+    sendDhuhrNotif = window.localStorage.getItem("sendDhuhrNotif");
+    sendAsrNotif = window.localStorage.getItem("sendAsrNotif");
+    sendMaghribNotif = window.localStorage.getItem("sendMaghribNotif");
+    sendIshaNotif = window.localStorage.getItem("sendIshaNotif");
+
+    setDefaultDropdown("calcMethodDropdown", calcMethodSelected)
+    setDefaultDropdown("latitudeRuleDropdown", latitudeRuleSelected)
+
+    if (madhabSelected == "toggle-on")
+    {
+        document.getElementById("toggle-on").checked = true;
+        document.getElementById("toggle-off").checked = false;
+    }
+    else
+    {
+        document.getElementById("toggle-on").checked = false;
+        document.getElementById("toggle-off").checked = true;
+    }
+
+    document.getElementById("fajrCheck").checked = sendFajrNotif == "true" ? true : false;
+    document.getElementById("sunriseCheck").checked =  sendSunriseNotif == "true" ? true : false;
+    document.getElementById("dhuhrCheck").checked =  sendDhuhrNotif == "true" ? true : false;
+    document.getElementById("asrCheck").checked =  sendAsrNotif == "true" ? true : false;
+    document.getElementById("maghribCheck").checked =  sendMaghribNotif == "true" ? true : false;
+    document.getElementById("ishaCheck").checked =  sendIshaNotif == "true" ? true : false;
+
+    console.log("Retrieved from local storage")
+    console.log(calcMethodSelected)
+    console.log(latitudeRuleSelected)
+    console.log(madhabSelected)
+    console.log(sendFajrNotif)
+    console.log(sendSunriseNotif)
+    console.log(sendDhuhrNotif)
+    console.log(sendAsrNotif)
+    console.log(sendMaghribNotif)
+    console.log(sendIshaNotif)
+}
+
+function setDefaultDropdown(dropdownId, defaultItem) {
+    const dropdown = document.getElementById(dropdownId);
+    const selected = dropdown.querySelector('.selected');
+    const menuItems = dropdown.querySelectorAll('.menu li');
+
+    menuItems.forEach(item => {
+        if (item.textContent === defaultItem) {
+            selected.textContent = defaultItem;
+            menuItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        }
+    });
+}
+
+loadLocalStorage()
