@@ -1,4 +1,5 @@
-//do "npm start" in terminal to run 
+// Copyright (c) 2025 Numair Hussain
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
@@ -15,19 +16,19 @@ let tray;
 function createMainWindow() {
     mainWindow = new BrowserWindow({
         title: 'Athan App',
-        width: 800, // was 400
-        height: 800, // was 650
+        width: 400, // was 400
+        height: 650, // was 650
         autoHideMenuBar: true,
-        resizable: true, //end in false
+        resizable: false, //end in false
         show: false,
         icon: iconPath,
         fullscreenable: false,
         webPreferences: {
-          devTools: true, //end in false
-          contextIsolation: false,
-          nodeIntegration: true
+          devTools: false, //end in false
+          contextIsolation: true,
+          nodeIntegration: false,
+          preload: path.join(__dirname, 'preload.js')
         }
-
     });
 
     mainWindow.loadFile(path.join(__dirname, './renderer/index.html'));
