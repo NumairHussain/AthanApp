@@ -19,12 +19,12 @@ function createMainWindow() {
         width: 400, // was 400
         height: 650, // was 650
         autoHideMenuBar: true,
-        resizable: false, //end in false
+        resizable: true, //end in false
         show: false,
         icon: iconPath,
         fullscreenable: false,
         webPreferences: {
-          devTools: false, //end in false
+          devTools: true, //end in false
           contextIsolation: true,
           nodeIntegration: false,
           preload: path.join(__dirname, 'preload.js')

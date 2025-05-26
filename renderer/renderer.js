@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Numair Hussain
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-const axios = require('axios');
+console.log("window.api is", window.api);
 
 const city = "Ypsilanti";
 const country = "US";
@@ -108,7 +108,8 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 //API Call to GEOJS to get location data, unable to do geolocation.navigator for some reason
 //This will be called every time the app is opened and when the button for the location is clicked
 const getLocation = async () => {
-    geolocationData = (await axios.get(`https://get.geojs.io/v1/ip/geo.json`)).data;
+    console.log("Fetching geolocation data...");
+    geolocationData = await window.api.axiosGet(`https://get.geojs.io/v1/ip/geo.json`);
     
     //Assigning the data to variables
     geolocationCity = geolocationData.city;
@@ -127,6 +128,8 @@ const getLocation = async () => {
     document.getElementById("locationButtonName").innerText = locationName;
 
     //Calling the getPrayerTimes function to get the prayer times for the location
+    console.log("Location data fetched successfully");
+    console.log("City: " + geolocationCity);
     getPrayerTimes();
 }
 
@@ -144,16 +147,11 @@ const getPrayerTimes = async () => {
     // http://api.aladhan.com/v1/timingsByCity/11-11-2024?city=ypsilanti&country=us&school=1&method=2&latitudeAdjustmentMethod=1
     // https://api.aladhan.com/v1/calendarByCity/2024/12?city=ypsilanti&country=US&method=2&school=1
 
-    console.log(geolocationCity);
-    console.log(geolocationCountry);
-    console.log("method: " + methodNumberParameter); 
-    console.log("school: " + schoolParameter);
-    console.log("lat: " + latitudeRuleParameter);
-
 
     try {
         //API call to get the prayer times for the location and the query parameters
-        let apiPrayerTimeData = await axios.get(
+        console.log("Fetching prayer times for: " + geolocationCity + ", " + geolocationCountry);
+        let apiPrayerTimeData = await window.api.axiosGet(
             `http://api.aladhan.com/v1/timingsByCity`, 
             {
             params: {
@@ -166,7 +164,7 @@ const getPrayerTimes = async () => {
         });
 
         //Assigning the prayer times to the prayerTimes variable
-        prayerTimes = apiPrayerTimeData.data.data.timings;
+        prayerTimes = apiPrayerTimeData.data.timings;
 
         //Assigning the prayer times to the variables
         fajrAdhanTime = prayerTimes.Fajr;
