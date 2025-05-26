@@ -1,14 +1,8 @@
-const axios = require('axios');
+// Copyright (c) 2025 Numair Hussain
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-/*--------------------------To Do List--------------------------------
--add minimize button that shrinks screen to only show current 
-    timing and the next timing, possibility to make it fully transparent
-    *Scrapped*
--make each screen have small details in the background
-    *Scrapped*
--Randomly throughout the day, grab the next days prayer times and save it
-    Change it and make it grab the whole calendar year?
-----------------------------------------------------------------------*/
+
+// const axios = require('axios');
 
 const city = "Ypsilanti";
 const country = "US";
@@ -94,7 +88,7 @@ const notificationPageElements = [
 
 const getPrayerTimes = async () => {
     try { 
-        let apiPrayerTimeData = await axios.get(
+        let apiPrayerTimeData = await window.api.axiosGet(
             `http://api.aladhan.com/v1/timingsByCity`, 
             {
             params: {
