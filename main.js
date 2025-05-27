@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Numair Hussain
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
 
@@ -27,7 +28,8 @@ function createMainWindow() {
           devTools: true, //end in false
           contextIsolation: true,
           nodeIntegration: false,
-          preload: path.join(__dirname, 'preload.js')
+          preload: path.join(__dirname, 'preload.js'),
+          sandbox: false
         }
     });
 
