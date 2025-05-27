@@ -631,7 +631,13 @@ function startLiveTime() {
 startLiveTime();
 
 //An event listener function for the Settings button at the bottom of the main page
-document.getElementById("toSettingsButton").addEventListener("click", () => {
+document.getElementById("toSettingsButton").addEventListener("click", toSettingPage)
+
+
+function toSettingPage() {
+
+    document.getElementById("toSettingsButton").removeEventListener("click", toSettingPage);
+
 
     //A flag for if the settings button is clicked
     toSettingsButtonClicked = true;
@@ -662,17 +668,26 @@ document.getElementById("toSettingsButton").addEventListener("click", () => {
     //Makes the title of the settings page opacity to 1
     sleep(2250).then(() => {document.getElementById("settingsTitle").style.opacity = 1})
 
+
+    document.getElementById("doneButton").disabled = true;
+
     //Makes all the elements in the settings page opacity to 1
     settingsPageElements.forEach((element, index) => {
         sleep(250 * (index + 1) + 2500).then(() => {
             element.style.opacity = 1;
+            if (element.id === "doneDiv") {
+                // Wait for the fade-in to finish (adjust if you have a CSS transition)
+                setTimeout(() => {
+                    document.getElementById("doneButton").disabled = false;
+                }, 250); // 250ms matches your fade-in step
+            }
         })
     })
 
     //makes the z-index of the drop down to 10 in CSS
     document.documentElement.style.setProperty("--dropdownIndex", 10)
 
-});
+};
 
 //Function that controls the dropdowns in the settings page
 dropdowns.forEach(dropdown => {
@@ -721,6 +736,8 @@ dropdowns.forEach(dropdown => {
 
 //An event listener function to get back to the main page from the settings page
 document.getElementById("doneButton").addEventListener("click", () => {
+
+    document.getElementById("toSettingsButton").addEventListener("click", toSettingPage);
 
     //Setting the Settings title's opacity to 0
     document.getElementById("settingsTitle").style.opacity = 0;
@@ -908,18 +925,6 @@ function loadLocalStorage() {
     document.getElementById("asrCheck").checked =  sendAsrNotif == "true" ? true : false;
     document.getElementById("maghribCheck").checked =  sendMaghribNotif == "true" ? true : false;
     document.getElementById("ishaCheck").checked =  sendIshaNotif == "true" ? true : false;
-
-    //Used for debugging
-    // console.log("Retrieved from local storage")
-    // console.log(calcMethodSelected)
-    // console.log(latitudeRuleSelected)
-    // console.log(madhabSelected)
-    // console.log(sendFajrNotif)
-    // console.log(sendSunriseNotif)
-    // console.log(sendDhuhrNotif)
-    // console.log(sendAsrNotif)
-    // console.log(sendMaghribNotif)
-    // console.log(sendIshaNotif)
 
     //Calling the getPrayerTimes function to get the prayer times for the location
     getPrayerTimes();
