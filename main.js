@@ -5,9 +5,8 @@
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron')
 
-const isMac = process.platform === 'darwin';
-const iconPath = path.join(__dirname, path.join('assets', 'mosque.png'))
-const whiteIconPath = path.join(__dirname, path.join('assets', 'white mosque.png'))
+const iconPath = path.join(__dirname, path.join('assets', 'mosque.ico'))
+const whiteIconPath = path.join(__dirname, path.join('assets', 'white_mosque.ico'))
 const fs = require("fs")
 
 let mainWindow; 
@@ -17,15 +16,15 @@ let tray;
 function createMainWindow() {
     mainWindow = new BrowserWindow({
         title: 'Athan App',
-        width: 400, // was 400
-        height: 650, // was 650
+        width: 400, 
+        height: 650, 
         autoHideMenuBar: true,
-        resizable: true, //end in false
+        resizable: false,
         show: false,
         icon: iconPath,
         fullscreenable: false,
         webPreferences: {
-          devTools: true, //end in false
+          devTools: false,
           contextIsolation: true,
           nodeIntegration: false,
           preload: path.join(__dirname, 'preload.js'),

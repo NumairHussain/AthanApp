@@ -258,7 +258,7 @@ const sendNotification = (salahName) => {
     var body = `It's ${salahName} Time!`;
 
     new Notification("Athan App", {
-        icon: "../assets/white mosque.png",
+        icon: "../assets/white_mosque.ico",
         title: title,
         body: body
     })
