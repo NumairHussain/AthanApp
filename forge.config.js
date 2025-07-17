@@ -8,20 +8,19 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    // Temporarily commented out Squirrel maker due to build error
-    // {
-    //   name: '@electron-forge/maker-squirrel',
-    //   config: {
-    //     name: 'athan-app',
-    //     authors: 'Numair Hussain',
-    //     description: 'Islamic Prayer Times App',
-    //     iconUrl: 'https://raw.githubusercontent.com/NumairHussain/AthanApp/main/assets/mosque.ico',
-    //     setupIcon: './assets/mosque.ico',
-    //     loadingGif: './assets/mosque.ico',
-    //     noMsi: true
-    //   },
-    //   platforms: ['win32']
-    // },
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        name: 'athan-app',
+        authors: 'Numair Hussain',
+        description: 'Islamic Prayer Times App',
+        iconUrl: 'https://raw.githubusercontent.com/NumairHussain/AthanApp/main/assets/mosque.ico',
+        setupIcon: './assets/mosque.ico',
+        loadingGif: './assets/mosque.ico',
+        noMsi: true
+      },
+      platforms: ['win32']
+    },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],

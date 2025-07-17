@@ -55,6 +55,9 @@ function createMainWindow() {
       {label: 'Show', click: () => {mainWindow.show()}},
       {label: 'Quit', click: () => {app.exit()}}]
     ));
+    
+    Menu.setApplicationMenu(null);
+
 };
 
 if (process.platform == 'win32') {
