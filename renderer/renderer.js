@@ -104,9 +104,6 @@ const notificationPageElements = [
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-//IT FUCKING WORKS FINALLLYYYY
-//API Call to GEOJS to get location data, unable to do geolocation.navigator for some reason
-//This will be called every time the app is opened and when the button for the location is clicked
 const getLocation = async () => {
     console.log("Fetching geolocation data...");
     geolocationData = await window.api.axiosGet(`https://get.geojs.io/v1/ip/geo.json`);
@@ -144,7 +141,7 @@ const getPrayerTimes = async () => {
     let schoolParameter = madhabSelected == "toggle-on" ? 1 : 0;
     let latitudeRuleParameter = getLatitudeNumber(latitudeRuleSelected);
 
-    // http://api.aladhan.com/v1/timingsByCity/11-11-2024?city=ypsilanti&country=us&school=1&method=2&latitudeAdjustmentMethod=1
+    // https://api.aladhan.com/v1/timingsByCity/11-11-2024?city=ypsilanti&country=us&school=1&method=2&latitudeAdjustmentMethod=1
     // https://api.aladhan.com/v1/calendarByCity/2024/12?city=ypsilanti&country=US&method=2&school=1
 
 
@@ -152,7 +149,7 @@ const getPrayerTimes = async () => {
         //API call to get the prayer times for the location and the query parameters
         console.log("Fetching prayer times for: " + geolocationCity + ", " + geolocationCountry);
         let apiPrayerTimeData = await window.api.axiosGet(
-            `http://api.aladhan.com/v1/timingsByCity`, 
+            `https://api.aladhan.com/v1/timingsByCity`, 
             {
             params: {
                 city: geolocationCity,
@@ -629,6 +626,11 @@ function startLiveTime() {
 }
 
 startLiveTime();
+
+//An event listener function for the Get Location button at the bottom of the main page
+document.getElementById("getLocationButton").addEventListener("click", getLocation);
+
+getLocation();
 
 //An event listener function for the Settings button at the bottom of the main page
 document.getElementById("toSettingsButton").addEventListener("click", toSettingPage)
