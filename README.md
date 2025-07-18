@@ -6,7 +6,8 @@ I saw a real lack of easy to use, uncomplicated, Athan Apps specifically for win
 
 ## Behind the Scenes
 
-This application uses (Electron)[https://www.electronjs.org] to enable desktop apps using HTML, CSS, and JS. All I'm doing in this application is gathering __**(locally saved)**__ via (GeoJS)[https://www.geojs.io] your location and then using the (Al Adhan)[https://aladhan.com] prayer times api to get that locations prayer times. Then it parses the data to be readable easily and when the sysem clock reaches that time, it sends a notification. The applciation also will run in your `tray` after being closed, so it'll still be able to send notifications
+This application uses [Electron](https://www.electronjs.org) to enable desktop apps using HTML, CSS, and JS. All I'm doing in this application is gathering __**(locally saved)**__ via [GeoJS](https://www.geojs.io) your location and then using the [Al Adhan](https://aladhan.com) prayer times API to get that location's prayer times. Then it parses the data to be readable easily and when the system clock reaches that time, it sends a notification. The application also will run in your tray after being closed, so it'll still be able to send notifications.
+
 
 ## Configurables
 
@@ -26,8 +27,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/NumairHussain/AthanApp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/NumairHussain/AthanApp/discussions)
-- **Email**: [Contact via GitHub](https://github.com/NumairHussain)
+- **GitHub**: [Contact via GitHub](https://github.com/NumairHussain)
 
 
 ## Privacy & Data
